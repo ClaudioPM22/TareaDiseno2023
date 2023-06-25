@@ -2,6 +2,8 @@
 #include <cmath>
 using namespace std;
 
+
+
 int main(int argc, char **argv){
 	int a,b;
 	if(argc != 4){
@@ -28,8 +30,10 @@ int main(int argc, char **argv){
     //generador de los saltos de super mario
     int aux=1;
     int pot=0;
+    vector<int> potencias;
     while(aux<n){
         aux=aux*p;
+        potencias.push_back(aux);
         pot+=1;
     }
     int *Saltos=new int[pot];
