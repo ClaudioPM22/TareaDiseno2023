@@ -1,9 +1,10 @@
 #include <iostream>
 #include <vector>
+#include <chrono>
 
 using namespace std;
 
-pair<int, vector<vector<int>>> formasYCombinaciones(vector<int> E, vector<int> p) {
+pair<int, vector<vector<int>>> combinaciones(vector<int> E, vector<int> p) {
     int n = E.size();
     vector<int> dp(n+1, 0);
     vector<vector<vector<int>>> comb(n+1);
@@ -39,7 +40,7 @@ int main(int argc, char **argv) {
     int p= atoi(argv[3]);
     //0: Roto, 1:Bueno
     vector<int> E;
-    for(int i=0;i<10;i++){
+    for(int i=0;i<n;i++){
         E.push_back(1);
     }
 
@@ -47,7 +48,7 @@ int main(int argc, char **argv) {
      for(int i=0;i<r;i++){
         roto=rand()%n;//genera numero aleatoria entre 1 y n-1
         E[roto]=0;
-        cout << roto << endl;
+
     }
 
 
@@ -66,16 +67,24 @@ int main(int argc, char **argv) {
         pot+=1;
     }
 
+    auto start = chrono::high_resolution_clock::now();
+    pair<int, vector<vector<int>>> result = combinaciones(E, potencias);
+    auto end = chrono::high_resolution_clock::now();
 
-    pair<int, vector<vector<int>>> result = formasYCombinaciones(E, potencias);
+    // Calcular la duración en segundos
+    chrono::duration<double> duration = end - start;
+    double tiempoEjecucion = duration.count();
 
-    cout << "Number of ways: " << result.first << endl;
+    // Imprimir el tiempo de ejecución
+    cout << "El tiempo de ejecución fue: " << tiempoEjecucion << " segundos." << endl;
+
+ /*    cout << "Number of ways: " << result.first << endl;
     cout << "Ways:" << endl;
     for(auto &way : result.second) {
         for(int j : way)
             cout << j << ' ';
         cout << '\n';
-    }
+    } */
 
     return 0;
 }

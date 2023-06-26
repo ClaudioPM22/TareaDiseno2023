@@ -1,12 +1,13 @@
 #include <iostream>
 #include <vector>
 #include <set>
+#include <chrono>
 
 using namespace std;
 
 set<vector<int>> posiblesSecuencias;
 
-void generarSecuencias(vector<int> escalera, vector<int> secuencia, vector<int> p){
+void Secuencias(vector<int> escalera, vector<int> secuencia, vector<int> p){
     if (escalera.size() == 0){
         posiblesSecuencias.insert(secuencia);
     }
@@ -16,16 +17,16 @@ void generarSecuencias(vector<int> escalera, vector<int> secuencia, vector<int> 
                 vector<int> nuevaEscalera(escalera.begin() + salto, escalera.end());
                 vector<int> nuevaSecuencia = secuencia;
                 nuevaSecuencia.push_back(salto);
-                generarSecuencias(nuevaEscalera, nuevaSecuencia, p);
+                Secuencias(nuevaEscalera, nuevaSecuencia, p);
             }
         }
     }
 }
 
-set<vector<int>> escalerasFuerzaBruta(vector<int> E, vector<int> p){
+set<vector<int>> fuerzaBruta(vector<int> E, vector<int> p){
     posiblesSecuencias.clear();
     vector<int> secuenciaVacia;
-    generarSecuencias(E, secuenciaVacia, p);
+    Secuencias(E, secuenciaVacia, p);
     return posiblesSecuencias;
 }
 
@@ -39,7 +40,7 @@ int main(int argc, char **argv){
     int p= atoi(argv[3]);
     
     vector<int> E;
-    for(int i=0;i<10;i++){
+    for(int i=0;i<n;i++){
         E.push_back(1);
     }
 
@@ -47,13 +48,9 @@ int main(int argc, char **argv){
       for(int i=0;i<r;i++){
         roto=rand()%n;//genera numero aleatoria entre 1 y n-1
         E[roto]=0;
-        cout << roto << endl;
     } 
-/* 
-    E[3] = 0;
-    E[4] = 0;
-    E[7] = 0; */
 
+    
     int aux=1;
     int pot=0;
     vector<int> potencias;
@@ -68,15 +65,23 @@ int main(int argc, char **argv){
         
         pot+=1;
     }
+    auto start = chrono::high_resolution_clock::now();
+    set<vector<int>> resultado = fuerzaBruta(E, potencias);
+    auto end = chrono::high_resolution_clock::now();
 
-    set<vector<int>> resultado = escalerasFuerzaBruta(E, potencias);
+    // Calcular la duración en segundos
+    chrono::duration<double> duration = end - start;
+    double tiempoEjecucion = duration.count();
 
-    for(auto secuencia : resultado){
+    // Imprimir el tiempo de ejecución
+    cout << "El tiempo de ejecución fue: " << tiempoEjecucion << " segundos." << endl;
+
+/*     for(auto secuencia : resultado){
         for(int salto : secuencia){
             cout << salto << ' ';
         }
         cout << endl;
-    }
+    } */
 
     return 0;
 }

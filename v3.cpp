@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include <vector>
 #include <queue>
 #include <limits>
@@ -9,11 +10,8 @@ using namespace std;
 
 typedef pair<int, int> pii;  // par (nodo, peso)
 
-int costoBarco(int pi, int qj) {
-    vector<vector<int>> costos = {
-        {-4, 9, 7},
-        {12, -3, 21}
-    };
+
+int costoBarco(int pi, int qj, vector<vector<int>> costos) {
 
     return costos[pi][qj];
 }
@@ -147,8 +145,26 @@ int main() {
     vector<vector<pii>> pais(n);
     vector<vector<pii>> archipielago(m);
     
+    int c;
+      for(int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            c=rand()%21;//genera numero aleatoria entre 0 y 20
+            if(c!=0){
+                pais[i].push_back(make_pair(j,c));
+            }
+        }
+       
+    }
+    vector<int> portsDirigido;
+    int lN=log2(n);
+    for(int i=0;i<lN;i++){
+        c=rand()%n;//Escoge un numero alazar para que este sea el puerto
+        portsDirigido.push_back(c);
+    }
 
-    pais[0].push_back(make_pair(1,2));
+
+
+/*     pais[0].push_back(make_pair(1,2));
     pais[0].push_back(make_pair(4,8));
     pais[1].push_back(make_pair(0,3));
     pais[1].push_back(make_pair(4,3));
@@ -158,11 +174,28 @@ int main() {
     pais[3].push_back(make_pair(2,5));
     pais[3].push_back(make_pair(4,9));
     pais[4].push_back(make_pair(2,2));
-    pais[4].push_back(make_pair(3,2));
+    pais[4].push_back(make_pair(3,2)); */
 
-        
+    
+    for(int i=0;i<m;i++){
+        for(int j=0;j<m;j++){
+            c=rand()%21;//genera numero aleatoria entre 0 y 20
+            if(c!=0){
+                archipielago[i].push_back(make_pair(j, c));
+                archipielago[j].push_back(make_pair(i, c));
+            }
+        }
+       
+    }
 
-    archipielago[0].push_back(make_pair(1, 1));
+    vector<int> portsNoDirigido;
+    c=rand()%m;
+    int lM=log2(m);
+    while(c<lM){
+        c=rand()%m;//Escoge la isla destino al azar
+    }
+    portsNoDirigido.push_back(c);
+   /*  archipielago[0].push_back(make_pair(1, 1));
     archipielago[1].push_back(make_pair(0, 1));
     archipielago[0].push_back(make_pair(3, 2));
     archipielago[3].push_back(make_pair(0, 2));
@@ -189,7 +222,18 @@ int main() {
     archipielago[5].push_back(make_pair(7, 7));
     archipielago[7].push_back(make_pair(5, 7));
     archipielago[7].push_back(make_pair(8, 3));
-    archipielago[8].push_back(make_pair(7, 3));
+    archipielago[8].push_back(make_pair(7, 3)); */
+    
+    vector<vector<int>> costos(lN,vector<int>(lM));
+    for(int i=0;i<lN;i++){
+        for(int j=0;j<lM;j++){
+            c = 1 + rand()%21; // Generar valor aleatorio en el rango 0 y 20
+            if (rand() % 2 == 0) { // Multiplicar por -1 con probabilidad del 50%
+                c *= -1;
+            }
+            costos[i][j]=c;
+        }
+    }
     
     int source = 0;  // nodo fuente
     vector<int> distancesDirigido;
@@ -198,10 +242,8 @@ int main() {
     
     dijkstraDirigido(pais, source, distancesDirigido, parentsDirigido);
     
-    vector<int> portsDirigido = {3,4};  // Puertos a los que se desea encontrar rutas
-    vector<int> portsNoDirigido = {8};
     list<int> distancesFinalesNoDirigidos;
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < lM; i++)
     {
         vector<int> distancesNoDirigido;
         vector<int> parentsNoDirigidos;
@@ -234,8 +276,8 @@ int main() {
         j = 0;
         for (const auto& elemento : distancesFinalesNoDirigidos)
         {
-            costo = distancesDirigido[port] + costoBarco(i,j) + elemento;
-            cout << distancesDirigido[port] << " + " << costoBarco(i,j) << " + " << elemento <<  endl;
+            costo = distancesDirigido[port] + costoBarco(i,j,costos) + elemento;
+            cout << distancesDirigido[port] << " + " << costoBarco(i,j,costos) << " + " << elemento <<  endl;
             if (costo < minCosto){
                 minCosto = costo;
                 besti = i;
