@@ -5,6 +5,7 @@
 #include <limits>
 #include <algorithm>
 #include <list>
+#include <chrono>   
 
 using namespace std;
 
@@ -12,7 +13,6 @@ typedef pair<int, int> pii;  // par (nodo, peso)
 
 
 int costoBarco(int pi, int qj, vector<vector<int>> costos) {
-
     return costos[pi][qj];
 }
 
@@ -139,9 +139,14 @@ void printShortestPathsNoDirigido(const vector<int>& distances, const vector<int
     }
 }
 
-int main() {
-    int n = 5;  // número de nodos
-    int m = 9;
+int main(int argc, char **argv) {
+	if(argc != 4){
+		cout << "Error. debe ejecutarse como ./v3 n k m" << endl;
+		exit(EXIT_FAILURE);}
+
+	int n = atoi(argv[1]);//tranformar un entero del segundo argumento de la llamada
+	int k= atoi(argv[2]);
+    int m= atoi(argv[3]);
     vector<vector<pii>> pais(n);
     vector<vector<pii>> archipielago(m);
     
@@ -156,8 +161,7 @@ int main() {
        
     }
     vector<int> portsDirigido;
-    int lN=log2(n);
-    for(int i=0;i<lN;i++){
+    for(int i=0;i<k;i++){
         c=rand()%n;//Escoge un numero alazar para que este sea el puerto
         portsDirigido.push_back(c);
     }
@@ -224,8 +228,8 @@ int main() {
     archipielago[7].push_back(make_pair(8, 3));
     archipielago[8].push_back(make_pair(7, 3)); */
     
-    vector<vector<int>> costos(lN,vector<int>(lM));
-    for(int i=0;i<lN;i++){
+    vector<vector<int>> costos(k,vector<int>(lM));
+    for(int i=0;i<k;i++){
         for(int j=0;j<lM;j++){
             c = 1 + rand()%21; // Generar valor aleatorio en el rango 0 y 20
             if (rand() % 2 == 0) { // Multiplicar por -1 con probabilidad del 50%
@@ -239,7 +243,7 @@ int main() {
     vector<int> distancesDirigido;
     vector<int> parentsDirigido;
 
-    
+    auto start = chrono::high_resolution_clock::now();
     dijkstraDirigido(pais, source, distancesDirigido, parentsDirigido);
     
     list<int> distancesFinalesNoDirigidos;
@@ -248,7 +252,7 @@ int main() {
         vector<int> distancesNoDirigido;
         vector<int> parentsNoDirigidos;
         dijkstraNoDirigido(archipielago, i, distancesNoDirigido, parentsNoDirigidos);
-        printShortestPathsNoDirigido(distancesNoDirigido, parentsNoDirigidos, i, portsNoDirigido);
+        //printShortestPathsNoDirigido(distancesNoDirigido, parentsNoDirigidos, i, portsNoDirigido);
         int tam = distancesNoDirigido.size();
         for (int i = 0; i < tam; ++i) {
             if (i != source && find(portsNoDirigido.begin(), portsNoDirigido.end(), i) != portsNoDirigido.end()) {
@@ -260,10 +264,10 @@ int main() {
     }
 
     
-    cout << "--------------------------------------------------------------------------" << endl;
-    printShortestPathsDirigido(distancesDirigido, parentsDirigido, source, portsDirigido);
+    //cout << "--------------------------------------------------------------------------" << endl;
+    //printShortestPathsDirigido(distancesDirigido, parentsDirigido, source, portsDirigido);
 
-    cout << "--------------------------------------------------------------------------" << endl;
+    //cout << "--------------------------------------------------------------------------" << endl;
 
     int costo;
     int minCosto = 9999999999999;
@@ -277,7 +281,7 @@ int main() {
         for (const auto& elemento : distancesFinalesNoDirigidos)
         {
             costo = distancesDirigido[port] + costoBarco(i,j,costos) + elemento;
-            cout << distancesDirigido[port] << " + " << costoBarco(i,j,costos) << " + " << elemento <<  endl;
+            //cout << distancesDirigido[port] << " + " << costoBarco(i,j,costos) << " + " << elemento <<  endl;
             if (costo < minCosto){
                 minCosto = costo;
                 besti = i;
@@ -288,8 +292,12 @@ int main() {
         }
         i++;        
     }
-
-    
+    auto end = chrono::high_resolution_clock::now();
+    // Calcular la duración en segundos
+    chrono::duration<double> duration = end - start;
+    double tiempoEjecucion = duration.count();
+    // Imprimir el tiempo de ejecución
+    cout << "El tiempo de ejecución fue: " << tiempoEjecucion << " segundos." << endl;
 
 
 
